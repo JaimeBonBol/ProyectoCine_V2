@@ -111,6 +111,14 @@ erDiagram
    ./mvnw spring-boot:run
    ```
 
+
+## 📝 Tareas del Alumno
+
+> [!IMPORTANT]
+> **OBLIGATORIO**: Las siguientes tareas son fundamentales para el seguimiento del curso y deben ser completadas en los plazos indicados.
+
+- 🚩 **[Tarea Inicial: Configuración y Primeros Pasos](Tareas/Tarea_inicial.md)**: Instrucciones para clonar, configurar el entorno y realizar el primer push.
+
 ## 📚 Lecciones y Recursos
 
 Para facilitar el aprendizaje y las pruebas del proyecto, se han incluido los siguientes materiales:
