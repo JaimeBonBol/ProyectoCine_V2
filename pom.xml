@@ -9,10 +9,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>2DAM</groupId>
-	<artifactId>Cine_V2</artifactId>
+	<artifactId>Cine_V2_Base</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>Cine_V2</name>
-	<description>Demo project for Spring Boot</description>
+	<name>Cine_V2_Base</name>
+	<description>Base project for Spring Boot Cinema Management</description>
 	<url/>
 	<licenses>
 		<license/>

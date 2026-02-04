@@ -1,6 +1,6 @@
-# Lección 1: El Proyecto Cine V2 - Introducción
+# Lección 1: El Proyecto Cine V2 Base - Introducción
 
-Bienvenido a la primera sesión sobre el proyecto **Cine V2**. Esta aplicación es un sistema robusto desarrollado con **Spring Boot** para gestionar la operativa diaria de un cine, desde la cartelera hasta la venta de entradas.
+Bienvenido a la primera sesión sobre el proyecto **Cine V2 Base**. Esta aplicación es un sistema robusto desarrollado con **Spring Boot** para gestionar la operativa diaria de un cine, desde la cartelera hasta la venta de entradas.
 
 ---
 

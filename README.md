@@ -1,4 +1,4 @@
-# 🎬 Cine_V2 - Sistema de Gestión de Entradas
+# 🎬 Cine_V2_Base - Sistema de Gestión de Entradas
 
 ![Java](https://img.shields.io/badge/Java-21-orange?style=for-the-badge&logo=openjdk)
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.0.2-brightgreen?style=for-the-badge&logo=springboot)
@@ -102,7 +102,7 @@ erDiagram
 
 1. **Clonar el repositorio**:
    ```bash
-   git clone https://github.com/AminHarouEdu/ProyectoCine_V2.git
+   git clone https://github.com/AminHarouEdu/Cine_V2_Base.git
    ```
 2. **Configurar la base de datos**:
    Asegúrate de tener PostgreSQL corriendo y configurar tus credenciales en `src/main/resources/application.properties`.
