@@ -111,5 +111,13 @@ erDiagram
    ./mvnw spring-boot:run
    ```
 
+## 📚 Lecciones y Recursos
+
+Para facilitar el aprendizaje y las pruebas del proyecto, se han incluido los siguientes materiales:
+
+- 📂 **[Carpeta de Lecciones](Lecciones/)**: Acceso a todo el material didáctico.
+- 📖 **[Lección 1: Introducción al Proyecto Cine V2](Lecciones/Lecci%C3%B3n%201%20-%20El%20proyecto%20Cine%20V2%20-%20Introducci%C3%B3n.md)**: Explicación de la estructura base.
+- 🚀 **[Colección de Postman](Lecciones/Postman_Cine_V2.json)**: Archivo para importar en Postman y realizar pruebas de la API.
+
 ---
 💎 *Proyecto académico desarrollado para el módulo de Acceso a Datos (2º DAM).*
