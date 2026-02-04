@@ -1,0 +1,87 @@
+@startuml
+
+skinparam linetype ortho
+
+entity "Actor" as actor {
+  *id : Long
+  --
+  nombre : String
+}
+
+entity "Director" as director {
+  *id : Long
+  --
+  nombre : String
+}
+
+entity "Pelicula" as pelicula {
+  *id : Long
+  --
+  titulo : String
+  duracion : int
+  edadMinima : int
+  director_id : Long <<FK>>
+}
+
+entity "Sala" as sala {
+  *id : Long
+  --
+  nombre : String
+  capacidad : int
+}
+
+entity "Funcion" as funcion {
+  *id : Long
+  --
+  fechaHora : LocalDateTime
+  precio : double
+  pelicula_id : Long <<FK>>
+  sala_id : Long <<FK>>
+}
+
+entity "Entrada" as entrada {
+  *id : Long
+  --
+  codigo : String
+  fila : int
+  asiento : int
+  estado : EstadoEntrada
+  funcion_id : Long <<FK>>
+  venta_id : Long <<FK>>
+}
+
+entity "Venta" as venta {
+  *id : Long
+  --
+  fecha : LocalDateTime
+  importeTotal : double
+  metodoPago : String
+  estado : String
+  usuario_id : Long <<FK>>
+}
+
+entity "Usuario" as usuario {
+  *id : Long
+  --
+  email : String
+  password : String
+  enabled : boolean
+}
+
+entity "Rol" as rol {
+  *id : Long
+  --
+  nombre : String
+}
+
+' Relaciones
+director ||..|{ pelicula : "1:N"
+pelicula }|..|{ actor : "N:M"
+pelicula ||..|{ funcion : "1:N"
+sala ||..|{ funcion : "1:N"
+funcion ||..|{ entrada : "1:N"
+venta ||..|{ entrada : "1:N"
+usuario ||..|{ venta : "1:N"
+usuario }|..|{ rol : "N:M"
+
+@enduml
