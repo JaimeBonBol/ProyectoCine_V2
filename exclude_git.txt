@@ -1,0 +1,3 @@
+.git\
+target\
+ProyectoCine_dev_V1\
