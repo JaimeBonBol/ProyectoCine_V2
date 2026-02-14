@@ -1,6 +1,7 @@
 package _DAM.Cine_V2.servicio;
 
-import _DAM.Cine_V2.dto.EntradaDTO;
+import _DAM.Cine_V2.dto.entrada.EntradaInputDTO;
+import _DAM.Cine_V2.dto.entrada.EntradaOutputDTO;
 import _DAM.Cine_V2.mapper.EntradaMapper;
 import _DAM.Cine_V2.modelo.Entrada;
 import _DAM.Cine_V2.modelo.EstadoEntrada;
@@ -26,21 +27,21 @@ public class EntradaService {
     private final EntradaMapper entradaMapper;
 
     @Transactional(readOnly = true)
-    public List<EntradaDTO> findAll() {
+    public List<EntradaOutputDTO> findAll() {
         return entradaRepository.findAll().stream()
                 .map(entradaMapper::toDTO)
                 .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
-    public EntradaDTO findById(Long id) {
+    public EntradaOutputDTO findById(Long id) {
         return entradaRepository.findById(id)
                 .map(entradaMapper::toDTO)
                 .orElseThrow(() -> new RuntimeException("Entrada no encontrada con ID: " + id));
     }
 
     @Transactional
-    public EntradaDTO save(EntradaDTO entradaDTO) {
+    public EntradaOutputDTO save(EntradaInputDTO entradaDTO) {
         // Validation: Seat availability
         if (isSeatOccupied(entradaDTO.funcionId(), entradaDTO.fila(), entradaDTO.asiento())) {
             throw new RuntimeException(
@@ -68,6 +69,52 @@ public class EntradaService {
 
         Entrada saved = entradaRepository.save(entrada);
         return entradaMapper.toDTO(saved);
+    }
+
+    @Transactional
+    public EntradaOutputDTO update(Long id, EntradaInputDTO entradaDTO) {
+        Entrada entrada = entradaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Entrada no encontrada con ID: " + id));
+
+        // Check seat only if changed
+        boolean checkSeat = false;
+        long newFuncionId = entradaDTO.funcionId() != null ? entradaDTO.funcionId() : entrada.getFuncion().getId();
+        int newFila = entradaDTO.fila() > 0 ? entradaDTO.fila() : entrada.getFila(); // Assuming 0 is invalid/not set
+        int newAsiento = entradaDTO.asiento() > 0 ? entradaDTO.asiento() : entrada.getAsiento();
+
+        // Since DTO uses primitives for fila/asiento, they might be 0 if not set?
+        // But InputDTO usually uses records or objects.
+        // If they are strictly fields in DTO, standard mapper overwrites them.
+        // Validation logic here is simplified.
+
+        if (entradaDTO.funcionId() != null && !entradaDTO.funcionId().equals(entrada.getFuncion().getId()))
+            checkSeat = true;
+        if (entradaDTO.fila() != entrada.getFila())
+            checkSeat = true;
+        if (entradaDTO.asiento() != entrada.getAsiento())
+            checkSeat = true;
+
+        if (checkSeat) {
+            if (isSeatOccupied(newFuncionId, newFila, newAsiento)) {
+                throw new RuntimeException(
+                        "El asiento " + newFila + "-" + newAsiento + " ya está ocupado.");
+            }
+        }
+
+        entradaMapper.update(entradaDTO, entrada);
+
+        if (entradaDTO.funcionId() != null) {
+            Funcion funcion = funcionRepository.findById(entradaDTO.funcionId())
+                    .orElseThrow(() -> new RuntimeException("Funcion no encontrada con ID: " + entradaDTO.funcionId()));
+            entrada.setFuncion(funcion);
+        }
+        if (entradaDTO.ventaId() != null) {
+            Venta venta = ventaRepository.findById(entradaDTO.ventaId())
+                    .orElseThrow(() -> new RuntimeException("Venta no encontrada con ID: " + entradaDTO.ventaId()));
+            entrada.setVenta(venta);
+        }
+
+        return entradaMapper.toDTO(entradaRepository.save(entrada));
     }
 
     public boolean isSeatOccupied(Long funcionId, int fila, int asiento) {

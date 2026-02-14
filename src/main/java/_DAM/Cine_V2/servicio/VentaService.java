@@ -1,7 +1,8 @@
 package _DAM.Cine_V2.servicio;
 
-import _DAM.Cine_V2.dto.EntradaDTO;
-import _DAM.Cine_V2.dto.VentaDTO;
+import _DAM.Cine_V2.dto.entrada.EntradaInputDTO;
+import _DAM.Cine_V2.dto.venta.VentaInputDTO;
+import _DAM.Cine_V2.dto.venta.VentaOutputDTO;
 import _DAM.Cine_V2.mapper.EntradaMapper;
 import _DAM.Cine_V2.mapper.VentaMapper;
 import _DAM.Cine_V2.modelo.*;
@@ -28,20 +29,20 @@ public class VentaService {
     private final VentaMapper ventaMapper;
     private final EntradaMapper entradaMapper;
 
-    public List<VentaDTO> findAll() {
+    public List<VentaOutputDTO> findAll() {
         return ventaRepository.findAll().stream()
                 .map(ventaMapper::toDTO)
                 .collect(Collectors.toList());
     }
 
-    public VentaDTO findById(Long id) {
+    public VentaOutputDTO findById(Long id) {
         return ventaRepository.findById(id)
                 .map(ventaMapper::toDTO)
                 .orElseThrow(() -> new RuntimeException("Venta no encontrada con ID: " + id));
     }
 
     @Transactional
-    public VentaDTO save(VentaDTO ventaDTO) {
+    public VentaOutputDTO save(VentaInputDTO ventaDTO) {
         Venta venta = ventaMapper.toEntity(ventaDTO);
 
         if (ventaDTO.usuarioId() != null) {
@@ -53,7 +54,7 @@ public class VentaService {
         // If we want to create tickets along with sale:
         if (ventaDTO.entradas() != null) {
             Set<Entrada> entradasEntities = new HashSet<>();
-            for (EntradaDTO eDTO : ventaDTO.entradas()) {
+            for (EntradaInputDTO eDTO : ventaDTO.entradas()) {
                 // Check function
                 if (eDTO.funcionId() == null)
                     throw new RuntimeException("Entrada sin funcion ID");
@@ -82,6 +83,25 @@ public class VentaService {
 
         Venta saved = ventaRepository.save(venta);
         return ventaMapper.toDTO(saved);
+    }
+
+    @Transactional
+    public VentaOutputDTO update(Long id, VentaInputDTO ventaDTO) {
+        Venta venta = ventaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Venta no encontrada con ID: " + id));
+
+        ventaMapper.update(ventaDTO, venta);
+
+        if (ventaDTO.usuarioId() != null) {
+            Usuario usuario = usuarioRepository.findById(ventaDTO.usuarioId())
+                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + ventaDTO.usuarioId()));
+            venta.setUsuario(usuario);
+        }
+
+        // Note: We are NOT updating tickets (entradas) here to simplify.
+        // Typical update for Venta might be status or user change.
+
+        return ventaMapper.toDTO(ventaRepository.save(venta));
     }
 
     public void deleteById(Long id) {

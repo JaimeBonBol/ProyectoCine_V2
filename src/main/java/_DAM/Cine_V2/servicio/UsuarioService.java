@@ -1,6 +1,7 @@
 package _DAM.Cine_V2.servicio;
 
-import _DAM.Cine_V2.dto.UsuarioDTO;
+import _DAM.Cine_V2.dto.usuario.UsuarioInputDTO;
+import _DAM.Cine_V2.dto.usuario.UsuarioOutputDTO;
 import _DAM.Cine_V2.mapper.UsuarioMapper;
 import _DAM.Cine_V2.modelo.Rol;
 import _DAM.Cine_V2.modelo.Usuario;
@@ -23,20 +24,20 @@ public class UsuarioService {
     private final RolRepository rolRepository;
     private final UsuarioMapper usuarioMapper;
 
-    public List<UsuarioDTO> findAll() {
+    public List<UsuarioOutputDTO> findAll() {
         return usuarioRepository.findAll().stream()
                 .map(usuarioMapper::toDTO)
                 .collect(Collectors.toList());
     }
 
-    public UsuarioDTO findById(Long id) {
+    public UsuarioOutputDTO findById(Long id) {
         return usuarioRepository.findById(id)
                 .map(usuarioMapper::toDTO)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + id));
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrada con ID: " + id));
     }
 
     @Transactional
-    public UsuarioDTO save(UsuarioDTO usuarioDTO) {
+    public UsuarioOutputDTO save(UsuarioInputDTO usuarioDTO) {
         Usuario usuario = usuarioMapper.toEntity(usuarioDTO);
 
         // Handle Roles
@@ -57,6 +58,31 @@ public class UsuarioService {
 
         Usuario saved = usuarioRepository.save(usuario);
         return usuarioMapper.toDTO(saved);
+    }
+
+    @Transactional
+    public UsuarioOutputDTO update(Long id, UsuarioInputDTO usuarioDTO) {
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrada con ID: " + id));
+
+        usuarioMapper.update(usuarioDTO, usuario);
+
+        // Handle Roles
+        if (usuarioDTO.roles() != null) {
+            Set<Rol> roles = new HashSet<>();
+            for (String rolNombre : usuarioDTO.roles()) {
+                Rol rol = rolRepository.findByNombre(rolNombre)
+                        .orElseThrow(() -> new RuntimeException("Rol no encontrado: " + rolNombre));
+                roles.add(rol);
+            }
+            usuario.setRoles(roles);
+        }
+
+        if (usuarioDTO.password() != null && !usuarioDTO.password().isBlank()) {
+            usuario.setPassword(usuarioDTO.password());
+        }
+
+        return usuarioMapper.toDTO(usuarioRepository.save(usuario));
     }
 
     public void deleteById(Long id) {
