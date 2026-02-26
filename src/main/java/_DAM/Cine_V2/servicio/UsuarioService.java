@@ -1,5 +1,7 @@
 package _DAM.Cine_V2.servicio;
 
+import _DAM.Cine_V2.dto.login.LoginRequestDTO;
+import _DAM.Cine_V2.dto.login.LoginResponseDTO;
 import _DAM.Cine_V2.dto.usuario.UsuarioInputDTO;
 import _DAM.Cine_V2.dto.usuario.UsuarioOutputDTO;
 import _DAM.Cine_V2.mapper.UsuarioMapper;
@@ -7,6 +9,7 @@ import _DAM.Cine_V2.modelo.Rol;
 import _DAM.Cine_V2.modelo.Usuario;
 import _DAM.Cine_V2.repositorio.RolRepository;
 import _DAM.Cine_V2.repositorio.UsuarioRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -90,5 +93,24 @@ public class UsuarioService {
             throw new RuntimeException("Usuario no encontrado con ID: " + id);
         }
         usuarioRepository.deleteById(id);
+    }
+
+    public LoginResponseDTO login(LoginRequestDTO request) {
+        // 1. Buscar por email
+        Usuario usuario = usuarioRepository.findByEmail(request.email())
+                .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
+
+        // 2. Comparar contraseña (ERROR GRAVE DE SEGURIDAD AQUÍ)
+        if (!usuario.getPassword().equals(request.password())) {
+            // throw new BadCredentialsException("Contraseña incorrecta");
+            throw new RuntimeException("Contraseña incorrecta"); // Cambiaremos a BadCredentialsException con Spring Security
+        }
+
+        // 3. Devolver DTO (NO entidad)
+        return new LoginResponseDTO(
+                usuario.getEmail(),
+                "Login exitoso (Inseguro)",
+                null
+        );
     }
 }
