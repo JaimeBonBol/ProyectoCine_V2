@@ -130,7 +130,7 @@ public class UsuarioService {
         u.setPassword(encoder.encode(req.password()));
         //u.setRol("USER");
 
-        Rol rolUser = rolRepository.findByNombre("ROLE_USER")
+        Rol rolUser = rolRepository.findByNombre("ROLE_ADMIN")
                         .orElseThrow(() -> new RuntimeException("Rol no encontrado"));
 
         Set<Rol> roles = new HashSet<>();
